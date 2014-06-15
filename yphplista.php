@@ -28,7 +28,7 @@ Copyright 2011  Yonatan Reinberg (email : yoni [a t ] s o cia l-ink DOT net) - h
 		 }  
 		 
 		function yphplista_add_menu() {  
-		  add_options_page("yPHPlista", "yPHPlista", 'manage_options', "yPHPlista", "yphplista_admin");  
+		  add_options_page("yPHPlista", "yPHPlista", 1, "yPHPlista", "yphplista_admin");  
 		}  
 
 	//script inits
@@ -51,7 +51,7 @@ Copyright 2011  Yonatan Reinberg (email : yoni [a t ] s o cia l-ink DOT net) - h
 	
 	//add widget support
 		function yphplista_widgetize($args) {
-		  echo 'yPHPLista';
+//		  echo 'yPHPLista';
 		  echo yphplista_output();
 
 		}
@@ -74,7 +74,7 @@ Copyright 2011  Yonatan Reinberg (email : yoni [a t ] s o cia l-ink DOT net) - h
 				
 			//start the script here
 			
-				$scriptoutput = "<script type=\"text/javascript\">\n";
+				$scriptoutput = "<script type='text/javascript'>\n";
 				
 				$scriptoutput .= "//<![CDATA[\n\n"; //cdata to validate XHTML
 				
@@ -84,18 +84,18 @@ Copyright 2011  Yonatan Reinberg (email : yoni [a t ] s o cia l-ink DOT net) - h
 								\n";
 								
 				//NEWSLETTER SIGNUP FORM SUBMISSION
-				$scriptoutput .=  "\$j_p(\"#yphp_submit\").click(function(){
+				$scriptoutput .=  "\$j_p('#yphp_submit').click(function(){
 
 									//set the button up
 									\$j_p('#yphp_submit').val('Submitting...');
 									
 									//Retrieve the contents of the textarea (the content)
-									var signup_email = \$j_p(\"#yphp_email\").val();
-									var signup_url = \$j_p(\"#yphp_subscribeurl\").val();
-									var signup_listname = \$j_p(\"#yphp_listname\").val();
-									var signup_listnum = \$j_p(\"#yphp_listnum\").val();
-									var signup_htmlemail = \$j_p(\"#yphp_htmlemail\").val();
-									var list_params = \"\";
+									var signup_email = \$j_p('#yphp_email').val();
+									var signup_url = \$j_p('#yphp_subscribeurl').val();
+									var signup_listname = \$j_p('#yphp_listname').val();
+									var signup_listnum = \$j_p('#yphp_listnum').val();
+									var signup_htmlemail = \$j_p('#yphp_htmlemail').val();
+									var list_params = '';
 
 									//Build the paramy of lists
 									\$j_p('.yphp_multlists').each(function(index) {
@@ -141,10 +141,10 @@ Copyright 2011  Yonatan Reinberg (email : yoni [a t ] s o cia l-ink DOT net) - h
 			echo "\n\n<!-- End of scripting by yPHPlista by Yonatan Reinberg/Social Ink (c) 2010 - http://social-ink.net - yoni@social-ink.net -->\n\n";
 		}
 
-		function yphplista($template_id=null,$listname=null,$listnum=null) {	//for function within the program
+		function yphplista($subscribe_id=null,$listname=null,$listnum=null) {	//for function within the program
 		
-			if($template_id==null)	
-				$template_id = get_option('yphplista_subscribepage');
+			if($subscribe_id==null)	
+				$subscribe_id = get_option('yphplista_subscribepage');
 				
 			if($listname==null)	
 				$listname = get_option('yphplista_listname');	
@@ -152,21 +152,20 @@ Copyright 2011  Yonatan Reinberg (email : yoni [a t ] s o cia l-ink DOT net) - h
 			if($listnum==null)	
 				$listnum = get_option('yphplista_listnum');
 			
-			echo yphplista_output(array('template_id'=>$template_id,'listname'=>$listname,'listnum'=>$listnum));
+			echo yphplista_output(array('subscribe_id'=>$subscribe_id,'listname'=>$listname,'listnum'=>$listnum));
 		}
 		
 		function yphplista_output($atts=null) {
 		
 			extract(shortcode_atts(array(	//get the attributes if any
-				'template_id' => get_option('yphplista_subscribepage'),
+				'subscribe_id' => get_option('yphplista_subscribepage'),
 				'listname' => get_option('yphplista_listname'),
 				'listnum' => get_option('yphplista_listnum'),
 			), $atts)); 
 			
 			//construct the necessary variables
-			$id_url = get_option('yphplista_url');
-			$id_url .= "?p=subscribe&id=" . $template_id;
-			$id_name = $listname;
+			$id_url = htmlspecialchars(get_option('yphplista_url') . "?p=subscribe&id=$subscribe_id");
+			$id_name = htmlspecialchars($listname);
 			$id_number = explode(",", $listnum);
 			
 			//get email options
@@ -178,27 +177,30 @@ Copyright 2011  Yonatan Reinberg (email : yoni [a t ] s o cia l-ink DOT net) - h
 				
 			//get text options
 			$caption_headline = get_option('yphplista_headlinetext');
+			$caption_preamble = get_option('yphplista_preambletext');
 			$caption_subscribe = get_option('yphplista_subscribetext');				
 			
-			$output = "<div id=\"yphplista_frame\">
-							<h2 id=\"yphplista_title\">". $caption_headline . "</h2>
-							
-							<form method=\"post\" name=\"yphp_subscribeform\" id=\"yphp_newsletterform\" action=\"" . $id_url . "\" onsubmit=\"\">
-								<input type=\"text\" name=\"email\" value=\"your email\" id=\"yphp_email\" class=\"submission-elements\" onfocus=\"yphp_clearDefault(this)\" />
-								<input type=\"hidden\" name=\"htmlemail\" value=\"" . $htmlemail . "\" id=\"yphp_htmlemail\" />								
-								<input type=\"hidden\" name=\"yphp_subscribeurl\" value=\"" . $id_url . "\" id=\"yphp_subscribeurl\" />";
+			$output = "<li class='widget' id='yphplista_frame'>
+							<h2 class='widgettitle'>$caption_headline</h2>
+							<p>$caption_preamble</p>
+							<form method='post' name='yphp_subscribeform' id='yphp_newsletterform' action='$id_url' onsubmit=''>
+								<input type='text' name='email' value='your email' id='yphp_email' class='submission-elements' onfocus='yphp_clearDefault(this)' />
+								<input type='hidden' name='htmlemail' value='$htmlemail' id='yphp_htmlemail' />								
+								<input type='hidden' name='yphp_subscribeurl' value='$id_url' id='yphp_subscribeurl' />
+                                ";
 								
 								foreach($id_number as $onelist) {  //for support for multiple lists - potentially - maybe in version 1.2
-									$output .=  	"<input type=\"hidden\" class=\"yphp_multlists\" id=\"yphp_listnum" . $onelist . "\" name=\"yphp_listnum" . $onelist . "\" value=\"" . $onelist . "\" />
-													<input type=\"hidden\" id=\"yphp_subcommand_jshelp" . $onelist . "\" name=\"list[" . $onelist . "]\" value=\"signup\" /> <!--for JS degrading -->";
+									$output .=  	"<input type='hidden' class='yphp_multlists' id='yphp_listnum$onelist' name='yphp_listnum$onelist' value='$onelist' />
+													<input type='hidden' id='yphp_subcommand_jshelp$onelist' name='list[$onelist]' value='signup' /> <!--for JS degrading -->
+                                                    ";
 								}
 								
-			$output .= 			"<input type=\"hidden\" id=\"yphp_listname\" name=\"listname\" value=\"" . $id_name . "\" />
-								<div style=\"display:none\"> <input type=\"text\" name=\"VerificationCodeX\" value=\"\" size=\"20\" /></div>								
-								<input type=\"submit\" name=\"subscribe\" id=\"yphp_submit\" value=\"" . $caption_subscribe . "\" class=\"subscribe-button submission-elements\" />
+			$output .= 			"<input type='hidden' id='yphp_listname' name='listname' value='$id_name' />
+								<div style='display:none'> <input type='text' name='VerificationCodeX' value='' size='20' /></div>								
+								<input type='submit' name='subscribe' id='yphp_submit' value='$caption_subscribe' class='subscribe-button submission-elements' />
 							</form>
-						</div>";
+						</li>";
 			
 			return $output;
 
-		 }	?>
+		 }

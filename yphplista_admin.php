@@ -18,6 +18,10 @@
 		//This is after they entered settings. So lets save them.
 
 		$id_url = $_POST['id_url'];
+
+        if (substr($id_url, -1) != '/') {
+            $id_url .= '/';
+        }
 		update_option('yphplista_url', $id_url);	
 
 		$id_name = $_POST['id_name'];
@@ -26,18 +30,21 @@
 		$id_num = $_POST['id_num'];
 		update_option('yphplista_listnum', $id_num);				
 		
-		$id_htmlemail = $_POST['id_htmlemail'];
-		update_option('yphplista_htmlemail', $id_htmlemail);		
-		
 		$id_subscribe = $_POST['id_subscribe'];
 		update_option('yphplista_subscribepage', $id_subscribe);				
 		
-		$caption_subscribe = $_POST['caption_subscribe'];
-		update_option('yphplista_subscribetext', $caption_subscribe);			
+		$id_htmlemail = $_POST['id_htmlemail'];
+		update_option('yphplista_htmlemail', $id_htmlemail);		
 		
 		$caption_headline = $_POST['caption_headline'];
 		update_option('yphplista_headlinetext', $caption_headline);	
 
+		$caption_preamble = $_POST['caption_preamble'];
+		update_option('yphplista_preambletext', $caption_preamble);	
+
+		$caption_subscribe = $_POST['caption_subscribe'];
+		update_option('yphplista_subscribetext', $caption_subscribe);			
+		
 
 		?>
 		
@@ -52,6 +59,7 @@
 		$id_subscribe = get_option('yphplista_subscribepage');
 		$id_htmlemail = get_option('yphplista_htmlemail');
 		$caption_headline = get_option('yphplista_headlinetext');
+		$caption_preamble = get_option('yphplista_preambletext');
 		$caption_subscribe = get_option('yphplista_subscribetext');
 	
 	}
@@ -76,10 +84,10 @@
 							<input type="hidden" name="yphplist_sent" value="Y">
 							
 									<h4>PHPList details</h4>		
-									<p>full url: <input type="text" name="id_url" value="<?php echo $id_url; ?>" size="50"> (root directory of phplist, with trailing / - ex: http://mycompany.org/list/)</p>
-									<p>default list name: <input type="text" name="id_name" value="<?php echo $id_name; ?>" size="20"> (find this under your "list of lists")</p>
-									<p>default list number: <input type="text" name="id_num" value="<?php echo $id_num; ?>" size="3"> (find this under your "list of lists")</p>
-									<p>default subscribe page id: <input type="text" name="id_subscribe" value="<?php echo $id_subscribe; ?>" size="3"> (find this under your "subscribe pages")</p>
+									<p>full url: <input type="text" name="id_url" value="<?php echo $id_url; ?>" size="50"></p>
+									<p>default list name: <input type="text" name="id_name" value="<?php echo $id_name; ?>" size="20"></p>
+									<p>default list number: <input type="text" name="id_num" value="<?php echo $id_num; ?>" size="3"></p>
+									<p>default subscribe page id: <input type="text" name="id_subscribe" value="<?php echo $id_subscribe; ?>" size="3"></p>
 
 									<h4>Ensure these are set on your chosen subscribe page:</h4>
 										<em>&raquo;&nbsp;&nbsp;Don't offer choice, default to HTML</em> should be checked<br />
@@ -89,8 +97,9 @@
 									html email default <input type="checkbox" name="id_htmlemail" id="id_htmlemail" value="true" <?php if ($id_htmlemail) { echo 'checked=checked'; } ?> />
 									
 									<h4>Display/content</h4>
-									<p>Headline: <input type="text" name="caption_headline" value="<?php echo $caption_headline; ?>" size="50"> (ex: "Sign up for our newsletter!")</p>
-									<p>button caption: <input type="text" name="caption_subscribe" value="<?php echo $caption_subscribe; ?>" size="20"> (ex: "hit submit and go")</p>				
+									<p>Headline: <input type="text" name="caption_headline" value="<?php echo $caption_headline; ?>" size="50"></p>
+									<p>Preamble: <textarea rows='3' class='large-text' name="caption_preamble"><?php echo $caption_preamble; ?></textarea></p>
+									<p>button caption: <input type="text" name="caption_subscribe" value="<?php echo $caption_subscribe; ?>" size="20"></p>				
 									
 									<hr />
 					
